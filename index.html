@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelForge Nexus - Secure Project Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #ff9e00;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+        
+        /* Header Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand-icon {
+            font-size: 1.8rem;
+        }
+        
+        /* Auth Container */
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+        
+        .auth-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+        
+        .auth-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .auth-body {
+            padding: 30px;
+        }
+        
+        .auth-switch {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 0;
+        }
+        
+        .auth-switch-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .auth-switch-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .social-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .google-btn {
+            color: #DB4437;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #777;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .divider-text {
+            padding: 0 15px;
+            font-size: 0.9rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+        
+        .input-group-icon {
+            background: #f8f9fa;
+            border-right: none;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 600;
+            padding: 12px;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-lg {
+            font-size: 1.1rem;
+            padding: 14px;
+        }
+        
+        /* OTP Styles */
+        .otp-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .otp-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 5px rgba(67, 97, 238, 0.5);
+        }
+        
+        .resend-otp {
+            cursor: pointer;
+            color: var(--primary);
+            text-decoration: underline;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .role-badge {
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+        }
+        
+        .project-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .project-item:last-child {
+            border-bottom: none;
+        }
+        
+        .project-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .project-deadline {
+            color: var(--danger);
+            font-weight: 500;
+        }
+        
+        .btn-action {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-add {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-remove {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-assign {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-view {
+            background: var(--warning);
+            color: white;
+        }
+        
+        /* Project Management Table */
+        .project-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .project-table th {
+            background-color: #f1f5f9;
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .project-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .project-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .project-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+        
+        .status-completed {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 158, 0, 0.2);
+            color: var(--warning);
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        /* Front Page Styles */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-card {
+                margin: 20px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#" id="brandLogo">
+                <i class="fas fa-shield-alt brand-icon"></i>
+                PixelForge Nexus
+            </a>
+            <div class="d-flex" id="authButtons">
+                <button id="registerBtnNav" class="btn btn-outline-primary me-2">Sign Up</button>
+                <button id="loginBtnNav" class="btn btn-primary">Log In</button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Front Page -->
+    <div class="hero" id="frontPage">
+        <h1>PixelForge Nexus</h1>
+        <p>Better Projects. Better Teams. Better Results.</p>
+        <div class="d-flex gap-3">
+            <button class="btn btn-primary btn-lg" id="frontRegisterBtn">
+                <i class="fas fa-user-plus me-2"></i>Sign Up
+            </button>
+            <button class="btn btn-outline-light btn-lg" id="frontLoginBtn">
+                <i class="fas fa-sign-in-alt me-2"></i>Log In
+            </button>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3>Secure by Design</h3>
+                <p>Built with advanced security protocols and OTP verification</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-users feature-icon"></i>
+                <h3>Role-Based Access</h3>
+                <p>Admin, Project Lead, and Developer roles with custom permissions</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-tasks feature-icon"></i>
+                <h3>Project Management</h3>
+                <p>Manage projects, teams, and resources in one place</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Authentication Container -->
+    <div class="auth-container" id="authContainer" style="display: none;">
+        <!-- Registration Card -->
+        <div class="auth-card" id="registrationCard">
+            <div class="auth-header">
+                <h2>Create Your Account</h2>
+                <p>Better Projects. Better Teams. Better Results.</p>
+            </div>
+            <div class="auth-body">
+                <form id="registrationForm">
+                    <div class="mb-3">
+                        <label for="regName" class="form-label">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="regName" placeholder="Enter your full name">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="regEmail" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="regEmail" placeholder="name@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="regPassword" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="regPassword" placeholder="Create a password">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleRegPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="regRole" class="form-label">Account Type</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-user-tag"></i></span>
+                            <select class="form-select" id="regRole">
+                                <option value="developer">Developer</option>
+                                <option value="project_lead">Project Lead</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="divider">
+                    <div class="divider-text">Already have an account?</div>
+                </div>
+                
+                <div class="auth-switch">
+                    <button type="button" class="auth-switch-btn" id="switchToLogin">
+                        Log In to Your Account
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="auth-card" id="loginCard" style="display: none;">
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p>Better Projects. Better Teams. Better Results.</p>
+            </div>
+            <div class="auth-body">
+                <div class="social-login">
+                    <button class="social-btn google-btn">
+                        <i class="fab fa-google"></i>
+                        Continue with Google
+                    </button>
+                </div>
+                
+                <div class="divider">
+                    <div class="divider-text">OR</div>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="name@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text input-group-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleLoginPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Log In & Send OTP
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="divider">
+                    <div class="divider-text">Don't have an account?</div>
+                </div>
+                
+                <div class="auth-switch">
+                    <button type="button" class="auth-switch-btn" id="switchToRegister">
+                        Create New Account
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- OTP Verification Card -->
+        <div class="auth-card" id="otpCard" style="display: none;">
+            <div class="auth-header">
+                <h2>Secure Verification</h2>
+                <p>We've sent a code to your email</p>
+            </div>
+            <div class="auth-body">
+                <p class="text-center mb-4">Enter the 6-digit verification code sent to <br><strong id="userEmail">user@example.com</strong></p>
+                
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                    <input type="text" class="otp-input" maxlength="1" autocomplete="off">
+                </div>
+                
+                <div class="d-grid mb-3">
+                    <button class="btn btn-primary btn-lg" id="verifyOtpBtn">
+                        <i class="fas fa-check-circle me-2"></i>Verify & Log In
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <span class="resend-otp" id="resendOtp">Resend Code</span>
+                    <span class="mx-2">|</span>
+                    <span class="resend-otp" id="changeEmail">Change Email</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Dashboard -->
+    <div class="dashboard container" id="adminDashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="welcome-text">Welcome, <span id="adminName">Admin User</span></h1>
+                <p>Manage projects, users, and system settings</p>
+            </div>
+            <div class="role-badge">Administrator</div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Project Management -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-project-diagram card-icon"></i>Project Management</h3>
+                <div class="mb-3">
+                    <button class="btn btn-add"><i class="fas fa-plus"></i> Add Project</button>
+                    <button class="btn btn-remove ms-2"><i class="fas fa-trash"></i> Remove Project</button>
+                </div>
+                <table class="project-table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Team</th>
+                            <th>Status</th>
+                            <th>Deadline</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>E-commerce Platform</td>
+                            <td>5 Developers</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td class="project-deadline">15/09/2025</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile Banking App</td>
+                            <td>8 Developers</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td class="project-deadline">30/10/2025</td>
+                        </tr>
+                        <tr>
+                            <td>AI Analytics Dashboard</td>
+                            <td>6 Developers</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td class="project-deadline">10/11/2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- User Management -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-users card-icon"></i>User Management</h3>
+                <div class="mb-3">
+                    <button class="btn btn-add"><i class="fas fa-user-plus"></i> Add User</button>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Sarah Johnson <span class="badge bg-primary">Admin</span></div>
+                    <div class="project-meta">
+                        <span>sarah@example.com</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Michael Chen <span class="badge bg-warning">Project Lead</span></div>
+                    <div class="project-meta">
+                        <span>michael@example.com</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Emma Rodriguez <span class="badge bg-success">Developer</span></div>
+                    <div class="project-meta">
+                        <span>emma@example.com</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">David Wilson <span class="badge bg-success">Developer</span></div>
+                    <div class="project-meta">
+                        <span>david@example.com</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Settings -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-shield-alt card-icon"></i>Security Settings</h3>
+                <div class="mb-3">
+                    <label class="form-label">Security Level</label>
+                    <select class="form-select">
+                        <option>High (Recommended)</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="mfaSwitch" checked>
+                        <label class="form-check-label" for="mfaSwitch">Enable Multi-Factor Authentication</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="auditLogSwitch" checked>
+                        <label class="form-check-label" for="auditLogSwitch">Enable Activity Audit Log</label>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-primary w-100">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Project Lead Dashboard -->
+    <div class="dashboard container" id="projectLeadDashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="welcome-text">Welcome, <span id="leadName">Project Lead</span></h1>
+                <p>Manage your projects and team assignments</p>
+            </div>
+            <div class="role-badge">Project Lead</div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- My Projects -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-list card-icon"></i>My Projects</h3>
+                <div class="project-item">
+                    <div class="project-title">E-commerce Platform</div>
+                    <div class="project-meta">
+                        <span>5 Developers</span>
+                        <span class="project-deadline">Deadline: 15/09/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Mobile Banking App</div>
+                    <div class="project-meta">
+                        <span>8 Developers</span>
+                        <span class="project-deadline">Deadline: 30/10/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Inventory System</div>
+                    <div class="project-meta">
+                        <span>4 Developers</span>
+                        <span class="project-deadline">Deadline: 25/08/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Assignment -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-user-friends card-icon"></i>Team Assignment</h3>
+                <div class="mb-3">
+                    <label class="form-label">Select Project</label>
+                    <select class="form-select mb-3">
+                        <option>E-commerce Platform</option>
+                        <option>Mobile Banking App</option>
+                        <option>Inventory System</option>
+                    </select>
+                    
+                    <label class="form-label">Assign Developer</label>
+                    <select class="form-select">
+                        <option>John Smith</option>
+                        <option>Emma Rodriguez</option>
+                        <option>David Wilson</option>
+                        <option>Sophia Lee</option>
+                    </select>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-assign w-100"><i class="fas fa-user-plus"></i> Assign to Project</button>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="card-title"><i class="fas fa-users"></i> Team Members</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            John Smith
+                            <span class="badge bg-primary">Lead</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Emma Rodriguez
+                            <span class="badge bg-success">Developer</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            David Wilson
+                            <span class="badge bg-success">Developer</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Sophia Lee
+                            <span class="badge bg-success">Developer</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Document Management -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-file-upload card-icon"></i>Document Management</h3>
+                <div class="mb-3">
+                    <label class="form-label">Select Project</label>
+                    <select class="form-select mb-3">
+                        <option>E-commerce Platform</option>
+                        <option>Mobile Banking App</option>
+                        <option>Inventory System</option>
+                    </select>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Upload Document</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-primary w-100"><i class="fas fa-upload"></i> Upload Document</button>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="card-title"><i class="fas fa-file"></i> Recent Documents</h4>
+                    <div class="project-item">
+                        <div class="project-title">Technical Specifications.pdf</div>
+                        <div class="project-meta">
+                            <span>Uploaded: 12/07/2025</span>
+                            <span>2.4 MB</span>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-title">UI Design Mockups.zip</div>
+                        <div class="project-meta">
+                            <span>Uploaded: 15/07/2025</span>
+                            <span>5.7 MB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Developer Dashboard -->
+    <div class="dashboard container" id="developerDashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="welcome-text">Welcome, <span id="devName">Developer</span></h1>
+                <p>View your assigned projects and resources</p>
+            </div>
+            <div class="role-badge">Developer</div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Assigned Projects -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-tasks card-icon"></i>Assigned Projects</h3>
+                <div class="project-item">
+                    <div class="project-title">E-commerce Platform</div>
+                    <div class="project-meta">
+                        <span>Project Lead: Michael Chen</span>
+                        <span class="project-deadline">Deadline: 15/09/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Mobile Banking App</div>
+                    <div class="project-meta">
+                        <span>Project Lead: Sarah Johnson</span>
+                        <span class="project-deadline">Deadline: 30/10/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Inventory System</div>
+                    <div class="project-meta">
+                        <span>Project Lead: John Smith</span>
+                        <span class="project-deadline">Deadline: 25/08/2025</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-view btn-sm"><i class="fas fa-eye"></i> View Details</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Project Resources -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-folder card-icon"></i>Project Resources</h3>
+                <div class="mb-3">
+                    <label class="form-label">Select Project</label>
+                    <select class="form-select">
+                        <option>E-commerce Platform</option>
+                        <option>Mobile Banking App</option>
+                        <option>Inventory System</option>
+                    </select>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Technical Specifications.pdf</div>
+                    <div class="project-meta">
+                        <span>Uploaded: 12/07/2025</span>
+                        <span>2.4 MB</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">UI Design Mockups.zip</div>
+                    <div class="project-meta">
+                        <span>Uploaded: 15/07/2025</span>
+                        <span>5.7 MB</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Meeting Notes 20-07.txt</div>
+                    <div class="project-meta">
+                        <span>Uploaded: 20/07/2025</span>
+                        <span>0.2 MB</span>
+                    </div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">API Documentation.pdf</div>
+                    <div class="project-meta">
+                        <span>Uploaded: 22/07/2025</span>
+                        <span>1.8 MB</span>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-primary w-100"><i class="fas fa-download"></i> Download All</button>
+                </div>
+            </div>
+            
+            <!-- Task Management -->
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fas fa-clipboard-list card-icon"></i>My Tasks</h3>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>To-Do</span>
+                        <span class="badge bg-primary">3</span>
+                    </div>
+                    <div class="list-group mt-2">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Implement Payment Gateway</h6>
+                                <small>2 days ago</small>
+                            </div>
+                            <small class="text-muted">E-commerce Platform</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Fix Login Bug</h6>
+                                <small>1 day ago</small>
+                            </div>
+                            <small class="text-muted">Mobile Banking App</small>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between">
+                        <span>In Progress</span>
+                        <span class="badge bg-warning">2</span>
+                    </div>
+                    <div class="list-group mt-2">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Design Product Page</h6>
+                                <small>Today</small>
+                            </div>
+                            <small class="text-muted">E-commerce Platform</small>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between">
+                        <span>Completed</span>
+                        <span class="badge bg-success">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>7032CEM Assignment - PixelForge Nexus Secure System</p>
+            <p>Deadline: 06/08/2025 at 6:00 PM (BST) | Developed with LLM assistance</p>
+        </div>
+    </footer>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample data for demonstration
+        const sampleUsers = [
+            { name: "Admin User", email: "admin@example.com", password: "admin123", role: "admin" },
+            { name: "Project Lead", email: "lead@example.com", password: "lead123", role: "project_lead" },
+            { name: "Developer", email: "dev@example.com", password: "dev123", role: "developer" }
+        ];
+        
+        // Store users in localStorage
+        localStorage.setItem('users', JSON.stringify(sampleUsers));
+        
+        $(document).ready(function() {
+            // Toggle password visibility
+            $('#toggleRegPassword').click(function() {
+                const passwordField = $('#regPassword');
+                const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+            
+            $('#toggleLoginPassword').click(function() {
+                const passwordField = $('#loginPassword');
+                const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+            
+            // Switch between registration and login
+            $('#switchToLogin').click(function() {
+                $('#registrationCard').hide();
+                $('#loginCard').show();
+            });
+            
+            $('#switchToRegister').click(function() {
+                $('#loginCard').hide();
+                $('#registrationCard').show();
+            });
+            
+            // Nav buttons
+            $('#registerBtnNav').click(function() {
+                $('#frontPage').hide();
+                $('#authContainer').show();
+                $('#registrationCard').show();
+                $('#loginCard').hide();
+                $('#otpCard').hide();
+            });
+            
+            $('#loginBtnNav').click(function() {
+                $('#frontPage').hide();
+                $('#authContainer').show();
+                $('#loginCard').show();
+                $('#registrationCard').hide();
+                $('#otpCard').hide();
+            });
+            
+            // Front page buttons
+            $('#frontRegisterBtn').click(function() {
+                $('#frontPage').hide();
+                $('#authContainer').show();
+                $('#registrationCard').show();
+                $('#loginCard').hide();
+                $('#otpCard').hide();
+            });
+            
+            $('#frontLoginBtn').click(function() {
+                $('#frontPage').hide();
+                $('#authContainer').show();
+                $('#loginCard').show();
+                $('#registrationCard').hide();
+                $('#otpCard').hide();
+            });
+            
+            // Brand logo returns to front page
+            $('#brandLogo').click(function() {
+                $('.dashboard').hide();
+                $('#authContainer').hide();
+                $('#frontPage').show();
+            });
+            
+            // Change email in OTP screen
+            $('#changeEmail').click(function() {
+                $('#otpCard').hide();
+                $('#loginCard').show();
+            });
+            
+            // OTP input navigation
+            $('.otp-input').keyup(function() {
+                if (this.value.length === this.maxLength) {
+                    $(this).next('.otp-input').focus();
+                }
+            });
+            
+            // Registration form submission
+            $('#registrationForm').submit(function(e) {
+                e.preventDefault();
+                
+                const name = $('#regName').val();
+                const email = $('#regEmail').val();
+                const password = $('#regPassword').val();
+                const role = $('#regRole').val();
+                
+                if (!name || !email || !password) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Create user object
+                const user = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: role
+                };
+                
+                // Get existing users or initialize empty array
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                
+                // Check if user already exists
+                if (users.some(u => u.email === email)) {
+                    alert('User with this email already exists');
+                    return;
+                }
+                
+                // Add new user
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('Account created successfully! Please log in.');
+                $('#registrationCard').hide();
+                $('#loginCard').show();
+                
+                // Reset form
+                $('#registrationForm')[0].reset();
+            });
+            
+            // Login form submission
+            $('#loginForm').submit(function(e) {
+                e.preventDefault();
+                
+                const email = $('#loginEmail').val();
+                const password = $('#loginPassword').val();
+                
+                if (!email || !password) {
+                    alert('Please enter both email and password');
+                    return;
+                }
+                
+                // Get users from localStorage
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    // Store current user info in sessionStorage
+                    sessionStorage.setItem('currentUserRole', user.role);
+                    sessionStorage.setItem('currentUserName', user.name);
+                    sessionStorage.setItem('currentUserEmail', user.email);
+                    
+                    // Set user email for OTP screen
+                    $('#userEmail').text(email);
+                    
+                    // Show OTP verification
+                    $('#loginCard').hide();
+                    $('#otpCard').show();
+                } else {
+                    alert('Invalid email or password');
+                }
+            });
+            
+            // Verify OTP
+            $('#verifyOtpBtn').click(function() {
+                const otp = getOTP();
+                
+                if (otp.length !== 6) {
+                    alert('Please enter the complete 6-digit OTP');
+                    return;
+                }
+                
+                // Simulate OTP verification
+                if (otp === '123456') { // Default OTP for demo
+                    const userRole = sessionStorage.getItem('currentUserRole');
+                    const userName = sessionStorage.getItem('currentUserName');
+                    
+                    // Hide auth container and show appropriate dashboard
+                    $('#authContainer').hide();
+                    $('#frontPage').hide();
+                    
+                    if (userRole === 'admin') {
+                        $('#adminDashboard').show();
+                        $('#adminName').text(userName);
+                    } else if (userRole === 'project_lead') {
+                        $('#projectLeadDashboard').show();
+                        $('#leadName').text(userName);
+                    } else {
+                        $('#developerDashboard').show();
+                        $('#devName').text(userName);
+                    }
+                    
+                    // Update navbar for logged-in state
+                    $('.navbar .d-flex').html(`
+                        <button class="btn btn-outline-danger" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Log Out
+                        </button>
+                    `);
+                    
+                    // Add logout functionality
+                    $('#logoutBtn').click(function() {
+                        // Clear sessionStorage
+                        sessionStorage.removeItem('currentUserRole');
+                        sessionStorage.removeItem('currentUserName');
+                        sessionStorage.removeItem('currentUserEmail');
+                        
+                        $('.dashboard').hide();
+                        $('#frontPage').show();
+                        $('.navbar .d-flex').html(`
+                            <button id="registerBtnNav" class="btn btn-outline-primary me-2">Sign Up</button>
+                            <button id="loginBtnNav" class="btn btn-primary">Log In</button>
+                        `);
+                        // Reattach event listeners
+                        $('#registerBtnNav').click(function() {
+                            $('#frontPage').hide();
+                            $('#authContainer').show();
+                            $('#registrationCard').show();
+                            $('#loginCard').hide();
+                            $('#otpCard').hide();
+                        });
+                        $('#loginBtnNav').click(function() {
+                            $('#frontPage').hide();
+                            $('#authContainer').show();
+                            $('#loginCard').show();
+                            $('#registrationCard').hide();
+                            $('#otpCard').hide();
+                        });
+                    });
+                } else {
+                    alert('Invalid OTP. Please try again.');
+                }
+            });
+            
+            // Resend OTP
+            $('#resendOtp').click(function() {
+                alert('New OTP has been sent to your email');
+                // In a real app, this would trigger the OTP email again
+            });
+            
+            // Helper function to get OTP
+            function getOTP() {
+                let otp = '';
+                $('.otp-input').each(function() {
+                    otp += $(this).val();
+                });
+                return otp;
+            }
+        });
+    </script>
+</body>
+</html>
